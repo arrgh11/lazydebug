@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Arrgh11\LazyDebug;
 
-use Arrgh11\LazyDebug\Page\LogsPage;
+use Arrgh11\LazyDebug\Page;
 use PhpTui\Term\Actions;
 use PhpTui\Term\ClearType;
 use PhpTui\Term\Event\CharKeyEvent;
@@ -64,7 +64,9 @@ final class App
         // build up an exhaustive set of pages
         foreach (ActivePage::cases() as $case) {
             $pages[$case->name] = match ($case) {
-                ActivePage::Logs => new LogsPage(),
+                ActivePage::Logs => new Page\LogsPage(),
+                ActivePage::Dumps => new Page\DumpsPage(),
+                ActivePage::Mails => new Page\MailsPage(),
             };
         }
 
@@ -117,8 +119,14 @@ final class App
                         if ($event->char === 'q') {
                             break 2;
                         }
-                        if ($event->char === '1') {
+                        if ($event->char === '1' || $event->char === 'l') {
                             $this->activePage = ActivePage::Logs;
+                        }
+                        if ($event->char === '2' || $event->char === 'd') {
+                            $this->activePage = ActivePage::Dumps;
+                        }
+                        if ($event->char === '3' || $event->char === 'm') {
+                            $this->activePage = ActivePage::Mails;
                         }
                     }
                 }
@@ -170,16 +178,18 @@ final class App
     private function header(): Widget
     {
         return BlockWidget::default()
-                ->borders(Borders::ALL)->style(Style::default()->white())
+                ->borders(Borders::ALL)->style(Style::default()->blue())
                 ->widget(
                     TabsWidget::fromTitles(
                         Line::parse('<fg=red>[q]</>uit'),
                         ...array_reduce(ActivePage::cases(), function (array $lines, ActivePage $page) {
-                            $lines[] = Line::fromString(sprintf('%s', $page->navItem()->label));
+                            $lines[] = Line::parse(sprintf('%s', $page->navItem()->label));
 
                             return $lines;
                         }, []),
-                    )->select($this->activePage->index() + 1)->highlightStyle(Style::default()->white()->onBlue())
+                    )
+                    ->select($this->activePage->index() + 1)
+                    ->highlightStyle(Style::default()->white()->onDarkGray())
                 );
     }
 }

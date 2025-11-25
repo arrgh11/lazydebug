@@ -9,11 +9,15 @@ use RuntimeException;
 enum ActivePage
 {
     case Logs;
+    case Dumps;
+    case Mails;
 
     public function navItem(): NavItem
     {
         return match ($this) {
-            ActivePage::Logs => new NavItem('1', 'logs'),
+            ActivePage::Logs => new NavItem('1', '<fg=red>[l]</>ogs'),
+            ActivePage::Dumps => new NavItem('2', '<fg=red>[d]</>umps'),
+            ActivePage::Mails => new NavItem('3', '<fg=red>[m]</>ails'),
         };
     }
 
