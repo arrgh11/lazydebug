@@ -1,0 +1,6 @@
+{
+  "name": "arrgh11/lazydebug",
+  "require": {
+    "php-tui/php-tui": "^0.2.1"
+  }
+}
