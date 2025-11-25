@@ -1,6 +1,12 @@
 {
   "name": "arrgh11/lazydebug",
+  "autoload": {
+    "psr-4": {
+      "Arrgh11\\LazyDebug\\": "src/"
+    }
+  },
   "require": {
-    "php-tui/php-tui": "^0.2.1"
+    "php-tui/php-tui": "^0.2.1",
+    "symfony/var-dumper": "^7.3"
   }
 }
