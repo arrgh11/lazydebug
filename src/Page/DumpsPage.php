@@ -9,9 +9,13 @@ use Arrgh11\LazyDebug\Services\DumpCollector;
 use PhpTui\Term\Event;
 use PhpTui\Term\KeyCode;
 use PhpTui\Tui\Extension\Core\Widget\BlockWidget;
+use PhpTui\Tui\Extension\Core\Widget\CompositeWidget;
 use PhpTui\Tui\Extension\Core\Widget\GridWidget;
 use PhpTui\Tui\Extension\Core\Widget\List\ListItem;
 use PhpTui\Tui\Extension\Core\Widget\ListWidget;
+use PhpTui\Tui\Extension\Core\Widget\Scrollbar\ScrollbarOrientation;
+use PhpTui\Tui\Extension\Core\Widget\Scrollbar\ScrollbarState;
+use PhpTui\Tui\Extension\Core\Widget\ScrollbarWidget;
 use PhpTui\Tui\Layout\Constraint;
 use PhpTui\Tui\Text\Text;
 use PhpTui\Tui\Text\Title;
@@ -47,6 +51,13 @@ final class DumpsPage implements Component
                 Constraint::percentage(100),
             )
             ->widgets(
+                // CompositeWidget::fromWidgets(
+                //     BlockWidget::default()->borders(Borders::ALL)->titles(Title::fromString('Window 1')),
+                //     ScrollbarWidget::default()->state(new ScrollbarState(20, 5, 5)),
+                //     ScrollbarWidget::default()
+                //   ->state(new ScrollbarState(20, 5, 5))
+                //   ->orientation(ScrollbarOrientation::VerticalRight),
+                // ),
                 BlockWidget::default()
                     ->titles(Title::fromString('Dumps (c: clear, ↑/↓: scroll)'))
                     ->borders(Borders::ALL)
@@ -55,7 +66,7 @@ final class DumpsPage implements Component
                             ->items(...$items)
                             ->select($this->scrollState)
                     )
-            );
+      );
     }
 
     public function handle(Event $event): void
@@ -77,6 +88,14 @@ final class DumpsPage implements Component
             if ($event->code === KeyCode::Up) {
                 $this->scrollState = max(0, $this->scrollState - 1);
             }
+
+            if ($event->code === KeyCode::Enter) {
+                //do something with the selected dump
+                $dumps = $this->collector->getDumps();
+                $selectedDump = $dumps[$this->scrollState] ?? null;
+                dump($selectedDump);
+            }
+
         }
     }
 }

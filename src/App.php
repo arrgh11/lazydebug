@@ -30,6 +30,7 @@ use PhpTui\Tui\Widget\Direction;
 use PhpTui\Tui\Widget\Widget;
 use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
+use React\Http\HttpServer;
 use React\Socket\SocketServer;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -130,6 +131,8 @@ final class App
 
     private function doRun(): int
     {
+
+
 
         $this->loop->addPeriodicTimer(0.05, function () {
             // handle events sent to the terminal
