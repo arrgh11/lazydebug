@@ -18,13 +18,14 @@ use PhpTui\Tui\Text\Text;
 use PhpTui\Tui\Text\Title;
 use PhpTui\Tui\Widget\Borders;
 use PhpTui\Tui\Widget\Widget;
+use React\EventLoop\LoopInterface;
 
 final class LogsPage implements Component
 {
     /** @var Event[] */
     private array $events = [];
 
-    public function build(): Widget
+    public function build(?LoopInterface $loop = null): Widget
     {
         return GridWidget::default()
             ->constraints(

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Arrgh11\LazyDebug;
 
 use Arrgh11\LazyDebug\Page;
+use Arrgh11\LazyDebug\Services\DumpCollector;
 use PhpTui\Term\Actions;
 use PhpTui\Term\ClearType;
 use PhpTui\Term\Event\CharKeyEvent;
@@ -27,6 +28,20 @@ use PhpTui\Tui\Text\Line;
 use PhpTui\Tui\Widget\Borders;
 use PhpTui\Tui\Widget\Direction;
 use PhpTui\Tui\Widget\Widget;
+use React\EventLoop\Loop;
+use React\EventLoop\LoopInterface;
+use React\Socket\SocketServer;
+use Symfony\Component\Console\Logger\ConsoleLogger;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\VarDumper\Cloner\Data;
+use Symfony\Component\VarDumper\Cloner\VarCloner;
+use Symfony\Component\VarDumper\Command\ServerDumpCommand;
+use Symfony\Component\VarDumper\Dumper\CliDumper;
+use Symfony\Component\VarDumper\Dumper\ContextProvider\CliContextProvider;
+use Symfony\Component\VarDumper\Dumper\ContextProvider\SourceContextProvider;
+use Symfony\Component\VarDumper\Dumper\ServerDumper;
+use Symfony\Component\VarDumper\Server\DumpServer;
+use Symfony\Component\VarDumper\VarDumper;
 use Throwable;
 
 /**
@@ -53,7 +68,10 @@ final class App
         private Display $display,
         private ActivePage $activePage,
         private array $pages,
+        private LoopInterface $loop,
+        private ?SocketServer $socket = null,
     ) {
+
     }
 
     public static function new(?Terminal $terminal = null, ?Backend $backend = null): self
@@ -75,11 +93,14 @@ final class App
             ->addExtension(new BdfExtension())
             ->build();
 
+        $loop = Loop::get();
+
         return new self(
             $terminal,
             $display,
             ActivePage::Logs,
             $pages,
+            $loop
         );
     }
 
@@ -110,14 +131,14 @@ final class App
     private function doRun(): int
     {
 
-        // the main loop
-        while (true) {
+        $this->loop->addPeriodicTimer(0.05, function () {
             // handle events sent to the terminal
             while (null !== $event = $this->terminal->events()->next()) {
                 if ($event instanceof CharKeyEvent) {
                     if ($event->modifiers === KeyModifiers::NONE) {
                         if ($event->char === 'q') {
-                            break 2;
+                            // $this->socket?->close();
+                            $this->loop->stop();
                         }
                         if ($event->char === '1' || $event->char === 'l') {
                             $this->activePage = ActivePage::Logs;
@@ -142,11 +163,9 @@ final class App
             }
 
             $this->display->draw($this->layout());
+        });
 
-            // sleep for Xms - note that it's encouraged to implement apps
-            // using an async library such as Amp or React
-            usleep(50_000);
-        }
+        $this->loop->run();
 
         $this->terminal->disableRawMode();
         $this->terminal->execute(Actions::cursorShow());
@@ -166,7 +185,7 @@ final class App
             )
             ->widgets(
                 $this->header(),
-                $this->activePage()->build(),
+                $this->activePage()->build($this->loop)
             );
     }
 

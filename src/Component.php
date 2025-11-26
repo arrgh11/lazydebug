@@ -6,10 +6,11 @@ namespace Arrgh11\LazyDebug;
 
 use PhpTui\Term\Event;
 use PhpTui\Tui\Widget\Widget;
+use React\EventLoop\LoopInterface;
 
 interface Component
 {
-    public function build(): Widget;
+    public function build(?LoopInterface $loop = null): Widget;
 
     public function handle(Event $event): void;
 }

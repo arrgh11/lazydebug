@@ -7,6 +7,11 @@
   },
   "require": {
     "php-tui/php-tui": "^0.2.1",
-    "symfony/var-dumper": "^7.3"
+    "symfony/var-dumper": "^7.3",
+    "symfony/http-client": "^7.3",
+    "symfony/console": "^7.3",
+    "react/http": "^1.11",
+    "react/socket": "^1.17",
+    "react/event-loop": "^1.6"
   }
 }
