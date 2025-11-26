@@ -4,29 +4,20 @@ declare(strict_types=1);
 
 namespace Arrgh11\LazyDebug\Page;
 
-use Symfony\Component\HttpClient\Chunk\ServerSentEvent;
-use Symfony\Component\HttpClient\EventSourceHttpClient;
 use Arrgh11\LazyDebug\Component;
 use Arrgh11\LazyDebug\Services\DumpCollector;
-use Arrgh11\LazyDebug\Widgets;
 use PhpTui\Term\Event;
 use PhpTui\Term\KeyCode;
-use PhpTui\Tui\Extension\Core\Widget\Block\Padding;
 use PhpTui\Tui\Extension\Core\Widget\BlockWidget;
 use PhpTui\Tui\Extension\Core\Widget\GridWidget;
 use PhpTui\Tui\Extension\Core\Widget\List\ListItem;
 use PhpTui\Tui\Extension\Core\Widget\ListWidget;
-use PhpTui\Tui\Extension\Core\Widget\ParagraphWidget;
 use PhpTui\Tui\Layout\Constraint;
-use PhpTui\Tui\Text\Line;
 use PhpTui\Tui\Text\Text;
 use PhpTui\Tui\Text\Title;
 use PhpTui\Tui\Widget\Borders;
 use PhpTui\Tui\Widget\Widget;
 use React\EventLoop\LoopInterface;
-use React\Socket\SocketServer;
-use Symfony\Component\VarDumper\Cloner\Data;
-use Symfony\Component\VarDumper\Dumper\CliDumper;
 
 final class DumpsPage implements Component
 {
@@ -77,8 +68,7 @@ final class DumpsPage implements Component
         }
 
         if ($event instanceof Event\CodedKeyEvent) {
-            // $dumpCount = count($this->collector->getDumps());
-            $dumpCount = 0;
+            $dumpCount = count($this->collector->getDumps());
 
             if ($event->code === KeyCode::Down) {
                 $this->scrollState = min($this->scrollState + 1, max(0, $dumpCount - 1));

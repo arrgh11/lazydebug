@@ -1,0 +1,10 @@
+#!/usr/bin/env php
+<?php
+
+use Arrgh11\LazyDebug\App;
+
+require __DIR__ . '/../vendor/autoload.php';
+
+
+$app = App::new();
+exit($app->run());

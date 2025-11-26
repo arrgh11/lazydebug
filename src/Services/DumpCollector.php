@@ -10,10 +10,10 @@ use Symfony\Component\VarDumper\Dumper\CliDumper;
 
 class DumpCollector
 {
-    private array $dumps = [];
+    private array $_dumps = [];
 
-    private int $maxDumps = 50;
-    /** @var resource|null */
+    private int $_maxDumps = 50;
+
     private ?TcpServer $_serverSocket = null;
 
     private bool $debug = true; // Enable debugging
@@ -89,22 +89,22 @@ class DumpCollector
 
     public function addDump(string $dump): void
     {
-        $this->dumps[] = $dump;
+        $this->_dumps[] = $dump;
 
         // Keep only last N dumps
-        if (count($this->dumps) > $this->maxDumps) {
-            array_shift($this->dumps);
+        if (count($this->_dumps) > $this->_maxDumps) {
+            array_shift($this->_dumps);
         }
     }
 
     public function getDumps(): array
     {
-        return $this->dumps;
+        return $this->_dumps;
     }
 
     public function clearDumps(): void
     {
-        $this->dumps = [];
+        $this->_dumps = [];
     }
 
     public function __destruct()
